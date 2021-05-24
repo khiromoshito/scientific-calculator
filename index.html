@@ -1,0 +1,537 @@
+<style>
+	body {
+		background-color: #151515;
+		font-size: 20px;
+		color: white;
+		font-family: Bahnschrift;
+	}
+	
+	.calc-wrap {
+		position: relative;
+		background-color: #353535;
+		height: 325px;
+		width: 730px;
+		padding: 30px;
+		margin: auto;
+		margin-top: 5vh;
+		
+		border-radius: 8px;
+	}
+	
+	.calc-window-wrap {
+		width: 100%;
+		height: 70px;
+		
+		position: relative;
+		
+	}
+	
+	.calc-feed {
+		width: 100%;
+		height: 70px;
+		background-color: rgba(0, 0, 0, 0.4);
+		
+		border-radius: 8px;
+		
+		position: absolute;
+		top: 0;
+		left: 0;
+		
+	}
+	
+	.calc-stat-wrap {
+		position: absolute;
+		top: 10px;
+		left: 10px;
+	}
+	
+	.calc-stat {
+		height: 70px;
+		position: relative;
+	}
+	
+	.trigo {
+		position: relative;
+		left: 40px;
+	}
+	
+	.trigo-mode {
+		position: absolute;
+		top: 0px;
+		
+		padding: 5px 10px 5px 10px;
+		font-size: 12px;
+		border-radius: 30px;
+		cursor: pointer;
+		opacity: 0.65;
+		
+		transition: 0.2s ease-out;
+	}
+	
+	.trigo-mode:hover {
+		background-color: rgba(0, 0, 0, 0.3);
+	}
+	
+	.trigo-mode-selected {
+		opacity: 1;
+		background-color: rgba(0, 0, 0, 0.5);
+	}
+	
+	.trigo-mode-selected:hover {
+		background-color: rgba(0, 0, 0, 0.5);
+	}
+	
+	#m {
+		position: absolute;
+		top: 4px;
+		left: 5px;
+		font-size: 15px;
+		
+		cursor: pointer;
+		
+		transition: 0.2s ease-out;
+	}
+	
+	#m:hover {
+		text-shadow: 0px 0px 20px rgba(255, 255, 255, 0.7);
+	}
+	
+	#feed, #result {
+		font-size: 35px;
+		color: white;
+		font-family: Bahnschrift;
+		text-align: right;
+		
+		width: 1000px;
+		
+		position: absolute;
+		bottom: 0px;
+		right: 10px;
+		
+		transition: ease-out 0.3s;
+	}
+	
+	#feed {
+		overflow: hidden;
+	}
+	
+	#result {
+		opacity: 0;
+		font-size: 0px;
+	}
+	
+	#result:before {
+		content: "=";
+		font-size: 25px;
+		opacity: 0.5;
+		
+		position: relative;
+		right: 5px;
+		bottom: 5px;
+	}
+	
+	.calc-body {
+		margin-top: 15px;
+		position: relative;
+	}
+	
+	.calc-buttons1, .calc-buttons2 {
+		position: relative;
+		height: 240px;
+		width: 300px;
+	}
+	
+	.calc-buttons2 {
+		top: -240px;
+		left: 310px;
+		
+		opacity: 0.7;
+	}
+	
+	.calc-btn {
+		height: 43px;
+		background-color: rgba(0, 0, 0, 0.2);
+		text-align: center;
+		padding-top: 17px;
+		cursor: pointer;
+		
+		position: absolute;
+		
+		font-size: 25px;
+		color: white;
+		font-family: Bahnschrift;
+		
+		transform: scale(0.96);
+		
+		transition: 0.2s ease-out;
+	}
+	
+	.col1 {
+		width: 60px;
+	}
+	
+	.col2 {
+		width: 120px;
+	}
+	
+	.calc-btn:hover {
+		background-color: rgba(0, 0, 0, 0.4);
+	}
+	
+	.calc-btn:active {
+		background-color: rgba(0, 0, 0, 0.7);
+		transform: scale(0.92);
+	}
+	
+	.backspace {
+		background-image: url(back.png);
+		background-size: 20px 20px;
+		background-position: center center;
+		background-repeat: no-repeat;
+	}
+	
+	.delete {
+		background-color: rgb(100, 50, 50);
+	}
+	
+	.delete:hover {
+		background-color: rgb(70, 30, 30);
+	}
+	
+	.operator {
+		background-size: 12px auto;
+		background-position: center center;
+		background-repeat: no-repeat;
+	}
+	
+	.btn-topleft {
+		border-radius: 8px 0px 0px 0px;
+	}
+	
+	.btn-topright {
+		border-radius: 0px 8px 0px 0px;
+	}
+	
+	.btn-bottomright {
+		border-radius: 0px 0px 8px 0px;
+	}
+	
+	.btn-bottomleft {
+		border-radius: 0px 0px 0px 8px;
+	}
+</style>
+
+<div class="calc-wrap">
+	<div class="calc-head">
+		<div class="calc-window-wrap">
+			<div class="calc-feed">
+				<div id="feed"></div>
+				<div id="result"></div>
+			</div>
+			
+			<div class="calc-stat-wrap">
+				<div class="calc-stat">
+					<div id="m" onclick="removeMemory()">M</div>
+					<div class="trigo">
+						<div onclick="setTMode('deg')" id="tmode-deg" class="trigo-mode trigo-mode-selected" style="left: 0px;">DEG</div>
+						<div onclick="setTMode('rad')" id="tmode-rad" class="trigo-mode" style="left: 50px;">RAD</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="calc-body">
+		<div class="calc-buttons1">
+			<div onclick="btnPress('n', 1)" class="calc-btn col1 number" style="top: 0; left: 0; border-radius: 8px 0px 0px 0px;">1</div>
+			<div onclick="btnPress('n', 2)" class="calc-btn col1 number" style="top: 0; left: 60px;">2</div>
+			<div onclick="btnPress('n', 3)" class="calc-btn col1 number" style="top: 0; left: 120px;">3</div>
+			<div onclick="btnPress('a', 'b')" class="calc-btn col1 backspace" style="top: 0; left: 180px;"></div>
+			<div onclick="btnPress('a', 'c')" class="calc-btn col1 delete" style="top: 0; left: 240px; border-radius: 0px 8px 0px 0px;">C</div>
+			<div onclick="btnPress('n', 4)" class="calc-btn col1 number" style="top: 60px; left: 0;">4</div>
+			<div onclick="btnPress('n', 5)" class="calc-btn col1 number" style="top: 60px; left: 60px;">5</div>
+			<div onclick="btnPress('n', 6)" class="calc-btn col1 number" style="top: 60px; left: 120px;">6</div>
+			<div onclick="btnPress('o', '+')" class="calc-btn col1 operator" style="top: 60px; left: 180px; background-image: url(add.png);"></div>
+			<div onclick="btnPress('o', '-')" class="calc-btn col1 operator" style="top: 60px; left: 240px; background-image: url(subtract.png);"></div>
+			<div onclick="btnPress('n', 7)" class="calc-btn col1 number" style="top: 120px; left: 0;">7</div>
+			<div onclick="btnPress('n', 8)" class="calc-btn col1 number" style="top: 120px; left: 60px;">8</div>
+			<div onclick="btnPress('n', 9)" class="calc-btn col1 number" style="top: 120px; left: 120px;">9</div>
+			<div onclick="btnPress('o', '*')" class="calc-btn col1 operator" style="top: 120px; left: 180px; background-image: url(multiply.png);"></div>
+			<div onclick="btnPress('o', '/')" class="calc-btn col1 operator" style="top: 120px; left: 240px; background-image: url(divide.png);"></div>
+			<div onclick="btnPress('n', 0)" class="calc-btn col1 number" style="top: 180px; left: 0; border-radius: 0px 0px 0px 8px;">0</div>
+			<div onclick="btnPress('n', '.')" class="calc-btn col1 number" style="top: 180px; left: 60px;">.</div>
+			<div onclick="btnPress('g', '(')" class="calc-btn col1 number" style="top: 180px; left: 120px;">(</div>
+			<div onclick="btnPress('g', ')')" class="calc-btn col1 number" style="top: 180px; left: 180px;">)</div>
+			<div onclick="btnPress('a', 'e')" class="calc-btn col1 operator" style="top: 180px; left: 240px; border-radius: 0px 0px 8px 0px; background-image: url(equal.png);"></div>
+		</div>
+		<div class="calc-buttons2">
+			<div onclick="btnPress('s', 'h')" class="calc-btn col1 number btn-topleft" style="top: 0; left: 0px;">%</div>
+			<div onclick="btnPress('s', 'f')" class="calc-btn col1 number" style="top: 0; left: 60px;">!</div>
+			<div onclick="btnPress('o', '^')" class="calc-btn col1 number" style="top: 0; left: 120px;">^</div>
+			<div onclick="btnPress('n', '^2')" class="calc-btn col1 number" style="top: 0px; left: 180px; font-size: 20px; padding-top: 16px; height: 44px;">x<sup>2</sup></div>
+			<div onclick="btnPress('n', '^3')" class="calc-btn col1 number" style="top: 0px; left: 240px; font-size: 20px; padding-top: 16px; height: 44px;">x<sup>3</sup></div>
+			<div onclick="btnPress('o', 'p')" class="calc-btn col1 number" style="top: 0; left: 300px; font-size: 22px; padding-top: 19px; height: 41px;">nPr</div>
+			<div onclick="btnPress('o', 'c')" class="calc-btn col1 number btn-topright" style="top: 0; left: 360px; font-size: 22px; padding-top: 19px; height: 41px;">nCr</div>
+			
+			
+			
+			<div onclick="btnPress('v', 'd')" class="calc-btn col1 number" style="top: 60px; left: 0;">&pi;</div>
+			<div onclick="btnPress('v', 'e')" class="calc-btn col1 number" style="top: 60px; left: 60px;">e</div>
+			<div onclick="btnPress('g', 'a')" class="calc-btn col1 number" style="top: 60px; left: 120px;">abs</div>
+			<div onclick="btnPress('g', 'l')" class="calc-btn col1 number" style="top: 60px; left: 180px;">log</div>
+			<div onclick="btnPress('g', 'g')" class="calc-btn col1 number" style="top: 60px; left: 240px;">ln</div>
+			<div id="btn-rt" onclick="btnPress('g', 'r')" class="calc-btn col1 number" style="top: 60px; left: 300px;"></div>
+			<div id="btn-rt3" onclick="btnPress('g', 'q')" class="calc-btn col1 number" style="top: 60px; left: 360px; padding-top: 11px; height: 49px;"></div>
+			
+			<div onclick="btnPress('g', 's')" class="calc-btn col1 number" style="top: 120px; left: 0px; font-size: 20px; padding-top: 19px; height: 41px;">sin</div>
+			<div onclick="btnPress('g', 'o')" class="calc-btn col1 number" style="top: 120px; left: 60px; font-size: 20px; padding-top: 19px; height: 41px;">cos</div>
+			<div onclick="btnPress('g', 't')" class="calc-btn col1 number" style="top: 120px; left: 120px; font-size: 20px; padding-top: 19px; height: 41px;">tan</div>
+			<div onclick="btnPress('g', 'x')" class="calc-btn col1 number" style="top: 120px; left: 180px; font-size: 20px; padding-top: 16px; height: 44px;">sin<sup>-1</sup></div>
+			<div onclick="btnPress('g', 'y')" class="calc-btn col1 number" style="top: 120px; left: 240px; font-size: 20px; padding-top: 16px; height: 44px;">cos<sup>-1</sup></div>
+			<div onclick="btnPress('g', 'z')" class="calc-btn col1 number" style="top: 120px; left: 300px; font-size: 20px; padding-top: 16px; height: 44px;">tan<sup>-1</sup></div>
+			<div onclick="btnPress('o', 'm')" class="calc-btn col1 number" style="top: 120px; left: 360px; font-size: 20px; padding-top: 19px; height: 41px;">mod</div>
+			
+			<div onclick="btnPress('g', 'v')" class="calc-btn col1 number btn-bottomleft" style="top: 180px; left: 0px; font-size: 20px; padding-top: 19px; height: 41px;">csc</div>
+			<div onclick="btnPress('g', 'u')" class="calc-btn col1 number" style="top: 180px; left: 60px; font-size: 20px; padding-top: 19px; height: 41px;">sec</div>
+			<div onclick="btnPress('g', 'w')" class="calc-btn col1 number" style="top: 180px; left: 120px; font-size: 20px; padding-top: 19px; height: 41px;">cot</div>
+			<div onclick="btnPress('m', 's')" class="calc-btn col1 number" style="top: 180px; left: 180px; font-size: 20px; padding-top: 19px; height: 41px;">M</div>
+			<div onclick="btnPress('m', 'a')" class="calc-btn col1 number" style="top: 180px; left: 240px; font-size: 20px; padding-top: 19px; height: 41px;">M+</div>
+			<div onclick="btnPress('m', 'g')" class="calc-btn col1 number" style="top: 180px; left: 300px; font-size: 20px; padding-top: 19px; height: 41px;">RM</div>
+			<div onclick="btnPress('o', 'n')" class="calc-btn col1 number btn-bottomright" style="top: 180px; left: 360px; font-size: 22px; padding-top: 15px; height: 45px;">x10<sup>n</sup></div>
+			
+			
+		</div>
+	</div>
+</div>
+
+<script src="main.js"></script>
+<script>
+	var prefield = "";
+	var fres;
+	var memory = 0;
+	var isResultDisplayed = false;
+	
+	var tmode = "deg";
+	
+	window.onload = function() {
+		document.getElementById('btn-rt').innerHTML="\u221A";
+		document.getElementById('btn-rt3').innerHTML="<sup>3</sup>\u221A";
+		
+		feed(prefield);
+		updateMemory();
+	}
+	
+	window.onkeypress = function(e) {
+		var key = Number(e.keyCode);
+		var type = null;
+		var val = null;
+		
+		/*
+		var keyVal = {
+			48: "0", 49: "1", 50: "2", 51: "3", 52: "4", 53: "5", 54: "6", 55: "7", 56: "8", 57: "9",
+			33: "s-f",
+			37: "s-h",
+			40: "g-0",
+			41: "g-1",
+			42: "o-m",
+			43: "o-a",
+			45: "o-s",
+			46: "n-d",
+			47: "o-d",
+			67: "o-c",
+			80: "o-p",
+			94: "o-e",
+			99: "o-c",
+			101: "v-e",
+			112: "o-p"
+		}
+		
+		var val = keyVal[key];
+		
+		if(val) {
+			document.getElementById("btn-"+val).click();
+		}*/
+		
+		if(key>=48 && key<=57) {
+			val = (key - 48)+"";
+		} else {
+			var keyVal = {
+				33: "f",
+				37: "h",
+				40: "(",
+				41: ")",
+				42: "*",
+				43: "+",
+				45: "-",
+				46: ".",
+				47: "/",
+				67: "c",
+				80: "p",
+				94: "^",
+				99: "c",
+				101: "e",
+				112: "p"
+			};
+			
+			if(keyVal[key]) {
+				val = keyVal[key];
+			} else {
+				keyVal = {
+					61: "e",
+					13: "e"
+				};
+				
+				if(keyVal[key]) {
+					val = keyVal[key];
+					type = "a";
+				}
+			}
+		}
+		
+
+		
+		if(val!=null) btnPress(type, val); //else alert(key);   
+		
+		
+	};
+	
+	function btnPress(type, value) {
+		switch(type) {
+			case "a":
+				switch(value) {
+					case "b":
+						if(isResultDisplayed) hideResult(); else prefield = prefield.substring(0, prefield.length-1);
+					break;
+					case "c":
+						prefield = "";
+						hideResult();
+					break;
+					case "e":
+						//console.clear();
+						var tokens = tokenize("("+prefield+")");
+						//preview(0, tokens);
+						
+						var ans = evaluate(tokens);
+						var result = "SYNTAX ERROR";
+						if(ans[0]==AnsType_Number) showResult(ans[1]); else showResult("SYNTAX ERROR");
+					break;
+				}
+			break;
+			case "m":
+				switch(value) {
+					case "s":
+						btnPress("a", "e");
+						memory = Number(fres);
+					break;
+					case "a":
+						btnPress("a", "e");
+						memory += Number(fres)
+					break;
+					case "g":
+						btnPress("n", memory);
+					break;
+				}
+				
+				updateMemory();
+			break;
+			default:
+				if(!isResultDisplayed) prefield += value; else {
+					document.getElementsByClassName("calc-feed")[0].innerHTML = "<div id=\"feed\"></div><div id=\"result\"></div>";
+					prefield = fres + value;
+					isResultDisplayed = false;
+				}
+		}
+		
+		feed(prefield);
+	}
+	
+	function updateMemory() {
+		var m = document.getElementById("m");
+		if(memory==0) {
+			m.style.opacity = "0.3";
+			m.style.color = "white";
+		} else {
+			m.style.opacity = "1";
+			m.style.color = "yellow";
+		}
+	}
+	
+	function removeMemory() {
+		memory = 0;
+		updateMemory();
+	}
+	
+	function setTMode(mode) {
+		tmode = mode;
+		updateTMode();
+	}
+	
+	function updateTMode() {
+		var tmodes = document.getElementsByClassName("trigo-mode");
+		for(var i=0; i<tmodes.length; i++) tmodes[i].setAttribute("class", "trigo-mode");
+		document.getElementById("tmode-"+tmode).setAttribute("class", "trigo-mode trigo-mode-selected");
+	}
+	
+	function toRadians(n) {
+		if(tmode=="deg") return (n*Math.PI)/180; else return n;
+	}
+	
+	function feed(pf) {
+		var ffi = "";
+		for(i=0; i<pf.length; i++) {
+			var ii = pf.charAt(i);
+			var fi = ii;
+			
+			var symbols = "*/decpmnhfalgsotuvwxyzrq";
+			var reads = [
+				"×", "÷", "&pi;", "e", "C", "P", "mod", "×10^", 
+				"%", "!", "abs(", "log(", "ln(",
+				"sin(", "cos(", "tan(",
+				"sec(", "csc(", "cot(",
+				"sin<sup>-1</sup>(", "cos<sup>-1</sup>(", "tan<sup>-1</sup>(",
+				"\u221A", "³\u221A"
+			];
+			
+			var ip = symbols.indexOf(ii);
+			if(ip!=-1) {
+				fi = reads[ip];
+			}
+			
+			ffi+=fi;
+		}
+		
+		if(ffi.length==0) ffi = "0";
+		
+		document.getElementById("feed").innerHTML = ffi;
+	}
+	
+	function showResult(res) {
+		var feed = document.getElementById("feed");
+		var result = document.getElementById("result");
+		
+		result.innerHTML = res;
+		
+		result.style.opacity = "1";
+		result.style.fontSize = "35px";
+		
+		feed.style.fontSize = "20px";
+		feed.style.opacity = "0.4";
+		feed.style.bottom = "40px";
+		
+		fres = res;
+		isResultDisplayed = true;
+	}
+	
+	function hideResult() {
+		var feed = document.getElementById("feed");
+		var result = document.getElementById("result");
+		
+		result.style.opacity = "0";
+		result.style.fontSize = "0px";
+		
+		feed.style.fontSize = "35px";
+		feed.style.opacity = "1";
+		feed.style.bottom = "0px";
+		
+		isResultDisplayed = false;
+	}
+</script>
